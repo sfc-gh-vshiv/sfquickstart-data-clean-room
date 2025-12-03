@@ -18,25 +18,66 @@ A concise guide explaining where queries run and who pays in a Snowflake Data Cl
 ## Architecture Overview
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#000000', 'primaryColor': '#e6f7ff'}}}%%
 flowchart TB
     subgraph ADVERTISER["📺 ADVERTISER ACCOUNT (Provider)"]
-        A1["Advertiser Data"] --- A2["🛡️ Data Firewall"] --- A3["Templates"] --- A4["Request Log"]
+        direction TB
+        subgraph ADV_DATA["Advertiser Data"]
+            AD1[("customers")]
+            AD2[("exposures")]
+        end
+        subgraph ADV_CLEAN["cleanroom schema"]
+            AT["templates view"]
+            APL["provider_log view"]
+            APA["provider_account"]
+        end
+        subgraph ADV_ADMIN["admin schema"]
+            ARL["request_log table"]
+            ARS["request_stream"]
+            APR["process_requests task"]
+        end
+        ADF["🛡️ data_firewall<br/>Row Access Policy"]
     end
-    
-    ADVERTISER ===>|"1️⃣ Share templates & protected views"| WALMART
     
     subgraph WALMART["🛒 WALMART ACCOUNT (Consumer)"]
-        W1["Mounted Share"] --- W2["Walmart Data"] --- W3["Request Procedure"] --- W4["🚀 Query Execution<br/>💰💰💰 MAIN COST"]
+        direction TB
+        subgraph WMT_DATA["Walmart Data"]
+            WD1[("customers")]
+            WD2[("conversions")]
+        end
+        subgraph WMT_APP["dcr_app (mounted share)"]
+            WT["templates"]
+            WPL["provider_log"]
+        end
+        WRQ["requests table"]
+        WRP["request() procedure"]
+        WQE["🚀 QUERY EXECUTION<br/>💰💰💰 MAIN COST"]
     end
     
-    WALMART ===>|"2️⃣ Submit requests"| ADVERTISER
-    ADVERTISER ===>|"3️⃣ Return approval status"| WALMART
+    %% Share flow: Advertiser to Walmart
+    AT -->|"SHARE: dcr_app"| WT
+    APL -->|"SHARE: dcr_app"| WPL
     
-    style ADVERTISER fill:#e6f7ff,stroke:#00A1D9,stroke-width:4px
-    style WALMART fill:#0071ce,stroke:#041e42,stroke-width:4px,color:#fff
-    style A2 fill:#00A1D9,color:#fff
-    style W4 fill:#ffc220,color:#000
+    %% Request flow: Walmart to Advertiser  
+    WRP -->|"1️⃣ Build query<br/>from template"| WRQ
+    WRQ -->|"SHARE: requests"| ARS
+    ARS -->|"2️⃣ Trigger"| APR
+    APR -->|"3️⃣ Validate & approve"| ARL
+    ARL -->|"Update"| APL
+    
+    %% Query execution flow
+    WPL -->|"4️⃣ Check approval"| WQE
+    WT -->|"Get template"| WRP
+    WMT_DATA -->|"Join"| WQE
+    ADV_DATA -->|"Protected by"| ADF
+    ADF -->|"If approved"| WQE
+    
+    style ADVERTISER fill:#e6f7ff,stroke:#00A1D9,stroke-width:3px
+    style WALMART fill:#cce5ff,stroke:#0071ce,stroke-width:3px
+    style WQE fill:#ffc220,stroke:#000,stroke-width:2px
+    style ADF fill:#00A1D9,stroke:#000,stroke-width:2px,color:#fff
+    style WRQ fill:#fff,stroke:#000,stroke-width:2px
+    style ARS fill:#fff,stroke:#000,stroke-width:2px
+    style APR fill:#fff,stroke:#000,stroke-width:2px
 ```
 
 ---

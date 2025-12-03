@@ -18,25 +18,66 @@ A concise guide explaining where queries run and who pays in a Snowflake Data Cl
 ## Architecture Overview
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#000000', 'primaryColor': '#e7f5ff'}}}%%
 flowchart TB
     subgraph PROVIDER["🏢 PROVIDER ACCOUNT"]
-        P1["Provider Data"] --- P2["🛡️ Data Firewall"] --- P3["Templates"] --- P4["Request Log"]
+        direction TB
+        subgraph PROV_DATA["Provider Data"]
+            PD1[("customers")]
+            PD2[("exposures")]
+        end
+        subgraph PROV_CLEAN["cleanroom schema"]
+            PT["templates view"]
+            PPL["provider_log view"]
+            PPA["provider_account"]
+        end
+        subgraph PROV_ADMIN["admin schema"]
+            PRL["request_log table"]
+            PRS["request_stream"]
+            PPR["process_requests task"]
+        end
+        PDF["🛡️ data_firewall<br/>Row Access Policy"]
     end
-    
-    PROVIDER ===>|"1️⃣ Share templates & protected views"| CONSUMER
     
     subgraph CONSUMER["🏪 CONSUMER ACCOUNT"]
-        C1["Mounted Share"] --- C2["Consumer Data"] --- C3["Request Procedure"] --- C4["🚀 Query Execution<br/>💰💰💰 MAIN COST"]
+        direction TB
+        subgraph CONS_DATA["Consumer Data"]
+            CD1[("customers")]
+            CD2[("conversions")]
+        end
+        subgraph CONS_APP["dcr_app (mounted share)"]
+            CT["templates"]
+            CPL["provider_log"]
+        end
+        CRQ["requests table"]
+        CRP["request() procedure"]
+        CQE["🚀 QUERY EXECUTION<br/>💰💰💰 MAIN COST"]
     end
     
-    CONSUMER ===>|"2️⃣ Submit requests"| PROVIDER
-    PROVIDER ===>|"3️⃣ Return approval status"| CONSUMER
+    %% Share flow: Provider to Consumer
+    PT -->|"SHARE: dcr_app"| CT
+    PPL -->|"SHARE: dcr_app"| CPL
     
-    style PROVIDER fill:#e7f5ff,stroke:#1971c2,stroke-width:4px
-    style CONSUMER fill:#fff3bf,stroke:#f59f00,stroke-width:4px
-    style P2 fill:#4dabf7,color:#fff
-    style C4 fill:#ff6b6b,color:#fff
+    %% Request flow: Consumer to Provider  
+    CRP -->|"1️⃣ Build query<br/>from template"| CRQ
+    CRQ -->|"SHARE: requests"| PRS
+    PRS -->|"2️⃣ Trigger"| PPR
+    PPR -->|"3️⃣ Validate & approve"| PRL
+    PRL -->|"Update"| PPL
+    
+    %% Query execution flow
+    CPL -->|"4️⃣ Check approval"| CQE
+    CT -->|"Get template"| CRP
+    CONS_DATA -->|"Join"| CQE
+    PROV_DATA -->|"Protected by"| PDF
+    PDF -->|"If approved"| CQE
+    
+    style PROVIDER fill:#e7f5ff,stroke:#1971c2,stroke-width:3px
+    style CONSUMER fill:#fff9db,stroke:#f59f00,stroke-width:3px
+    style CQE fill:#ff6b6b,stroke:#000,stroke-width:2px,color:#fff
+    style PDF fill:#4dabf7,stroke:#000,stroke-width:2px,color:#fff
+    style CRQ fill:#fff,stroke:#000,stroke-width:2px
+    style PRS fill:#fff,stroke:#000,stroke-width:2px
+    style PPR fill:#fff,stroke:#000,stroke-width:2px
 ```
 
 ---
