@@ -140,13 +140,13 @@ sequenceDiagram
 ## Visual Cost Distribution
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'pie1': '#d12b1f', 'pie2': '#42A5F5', 'pie3': '#FF6F00', 'pie4': '#FFB74D', 'pieStrokeColor': '#333', 'pieStrokeWidth': '2px'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': { 'pie1': '#d12b1f', 'pie2': '#fcba03', 'pie3': '#FFB74D', 'pie4': '#94a14a', 'pieStrokeColor': '#333', 'pieStrokeWidth': '2px'}}}%%
 pie showData
     title Who Pays for What?
     "Consumer - Query Execution" : 70
-    "Consumer - Setup & Requests" : 10
     "Provider - Validation Tasks" : 15
     "Provider - Setup" : 5
+    "Consumer - Setup & Requests" : 10
 ```
 
 ---
