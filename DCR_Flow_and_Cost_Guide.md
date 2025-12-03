@@ -18,6 +18,7 @@ A concise guide explaining where queries run and who pays in a Snowflake Data Cl
 ## Architecture Overview
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'lineColor': '#333', 'primaryTextColor': '#333', 'primaryBorderColor': '#333'}}}%%
 flowchart TB
     subgraph Provider["🏢 PROVIDER ACCOUNT"]
         PD[(Provider Data<br/>customers, exposures)]
@@ -50,9 +51,11 @@ flowchart TB
     
     REQ -.->|Shared Back| Provider
     
-    style Provider fill:#e3f2fd
-    style Consumer fill:#fff3e0
-    style Share fill:#f3e5f5
+    style Provider fill:#c5d86d,stroke:#94a14a,stroke-width:3px
+    style Consumer fill:#f4a261,stroke:#d12b1f,stroke-width:3px
+    style Share fill:#fcba03,stroke:#e9a000,stroke-width:3px
+    
+    linkStyle default stroke:#333,stroke-width:2px
 ```
 
 ---
@@ -60,6 +63,7 @@ flowchart TB
 ## Request Lifecycle
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'actorBkg': '#f4a261', 'actorBorder': '#d12b1f', 'actorTextColor': '#333', 'actorLineColor': '#333', 'signalColor': '#333', 'signalTextColor': '#333', 'noteBkgColor': '#fcba03', 'noteBorderColor': '#e9a000', 'noteTextColor': '#333', 'sequenceNumberColor': '#fff'}}}%%
 sequenceDiagram
     autonumber
     participant C as 👤 Consumer
@@ -145,8 +149,8 @@ pie showData
     title Who Pays for What?
     "Consumer - Query Execution" : 70
     "Provider - Validation Tasks" : 15
-    "Provider - Setup" : 5
     "Consumer - Setup & Requests" : 10
+    "Provider - Setup" : 5
 ```
 
 ---
@@ -160,14 +164,18 @@ The Provider's data is protected by a **Row Access Policy** that only allows acc
 3. The request has been approved
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 'lineColor': '#333', 'primaryTextColor': '#333'}}}%%
 flowchart LR
     Q[Consumer Query] --> DF{Data Firewall}
     DF -->|Hash matches approved request| D[(Provider Data)]
     DF -->|Hash doesn't match| X[❌ No rows returned]
     
-    style DF fill:#ffcdd2
-    style D fill:#c8e6c9
-    style X fill:#ffcdd2
+    style Q fill:#f4a261,stroke:#d12b1f,stroke-width:3px
+    style DF fill:#fcba03,stroke:#e9a000,stroke-width:3px
+    style D fill:#c5d86d,stroke:#94a14a,stroke-width:3px
+    style X fill:#d12b1f,stroke:#8b0000,stroke-width:3px,color:#fff
+    
+    linkStyle default stroke:#333,stroke-width:2px
 ```
 
 ---
@@ -179,45 +187,6 @@ flowchart LR
 3. **Data never moves** - Only queries and results cross account boundaries
 4. **Templates control access** - Provider defines exactly what queries are allowed
 5. **Aggregation enforced** - `HAVING count(*) > 25` prevents individual record exposure
-
----
-
-## Warehouse Sizing Recommendations
-
-| Party | Workload | Recommended Size |
-|-------|----------|------------------|
-| Provider | Validation tasks | X-Small or Small |
-| Consumer | Query execution | Small to Medium (depends on data volume) |
-
----
-
-## Cross-Cloud Considerations
-
-When Provider and Consumer are in different clouds/regions (e.g., GCP to AWS):
-
-- **Auto-fulfillment** replicates shared data
-- **Additional replication costs** apply to the Provider
-- **Refresh schedule** (2 minutes in this setup) affects data freshness
-
-```mermaid
-flowchart LR
-    subgraph GCP["☁️ GCP (Provider)"]
-        PD[(Provider Data)]
-    end
-    
-    subgraph AWS["☁️ AWS (Consumer)"]
-        RD[(Replicated Data)]
-        CD[(Consumer Data)]
-    end
-    
-    PD -->|Auto-fulfillment<br/>Every 2 min| RD
-    RD --> JOIN{Join}
-    CD --> JOIN
-    JOIN --> R[Results]
-    
-    style GCP fill:#e8f5e9
-    style AWS fill:#fff3e0
-```
 
 ---
 
