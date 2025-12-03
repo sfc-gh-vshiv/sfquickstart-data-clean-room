@@ -169,7 +169,7 @@ The Provider's data is protected by a **Row Access Policy** that only allows acc
 3. The request has been approved
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '16px'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'fontSize': '26px'}}}%%
 flowchart TB
     Q[Consumer Query] ==> DF{Data Firewall}
     DF ==>|"✅ Hash matches"| D[(Provider Data)]
