@@ -18,41 +18,25 @@ A concise guide explaining where queries run and who pays in a Snowflake Data Cl
 ## Architecture Overview
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#000000', 'primaryColor': '#e7f5ff'}}}%%
 flowchart TB
     subgraph PROVIDER["🏢 PROVIDER ACCOUNT"]
-        direction LR
-        PD[("Provider Data")]
-        PT["Templates"]
-        RS["Request Stream"]
-        RL["Request Log"]
-        RAP["🛡️ Data Firewall"]
+        P1["Provider Data"] --- P2["🛡️ Data Firewall"] --- P3["Templates"] --- P4["Request Log"]
     end
+    
+    PROVIDER ===>|"1️⃣ Share templates & protected views"| CONSUMER
     
     subgraph CONSUMER["🏪 CONSUMER ACCOUNT"]
-        direction LR
-        CD[("Consumer Data")]
-        MS["Mounted Share"]
-        RP["Request Procedure"]
-        QE["🚀 Query Execution<br/>MAIN COST 💰💰💰"]
+        C1["Mounted Share"] --- C2["Consumer Data"] --- C3["Request Procedure"] --- C4["🚀 Query Execution<br/>💰💰💰 MAIN COST"]
     end
     
-    PD -.->|protected by| RAP
-    RAP ==>|"Secure Share"| MS
-    PT ==>|"Templates"| MS
-    RP ==>|"Requests"| RS
-    RS -.-> RL
-    RL ==>|"Approval Status"| CONSUMER
+    CONSUMER ===>|"2️⃣ Submit requests"| PROVIDER
+    PROVIDER ===>|"3️⃣ Return approval status"| CONSUMER
     
-    MS --> QE
-    CD --> QE
-    
-    style QE fill:#ff6b6b,stroke:#333,stroke-width:3px,color:#fff
-    style RAP fill:#4dabf7,stroke:#333,stroke-width:2px,color:#fff
-    style PROVIDER fill:#e7f5ff,stroke:#1971c2,stroke-width:3px
-    style CONSUMER fill:#fff3bf,stroke:#f59f00,stroke-width:3px
-    
-    linkStyle 0,3 stroke:#666,stroke-width:1px,stroke-dasharray:5
-    linkStyle 1,2,4,5 stroke:#333,stroke-width:3px
+    style PROVIDER fill:#e7f5ff,stroke:#1971c2,stroke-width:4px
+    style CONSUMER fill:#fff3bf,stroke:#f59f00,stroke-width:4px
+    style P2 fill:#4dabf7,color:#fff
+    style C4 fill:#ff6b6b,color:#fff
 ```
 
 ---

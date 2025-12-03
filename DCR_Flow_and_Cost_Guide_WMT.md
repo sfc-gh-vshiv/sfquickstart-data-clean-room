@@ -18,41 +18,25 @@ A concise guide explaining where queries run and who pays in a Snowflake Data Cl
 ## Architecture Overview
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#000000', 'primaryColor': '#e6f7ff'}}}%%
 flowchart TB
     subgraph ADVERTISER["📺 ADVERTISER ACCOUNT (Provider)"]
-        direction LR
-        PD[("Advertiser Data")]
-        PT["Templates"]
-        RS["Request Stream"]
-        RL["Request Log"]
-        RAP["🛡️ Data Firewall"]
+        A1["Advertiser Data"] --- A2["🛡️ Data Firewall"] --- A3["Templates"] --- A4["Request Log"]
     end
+    
+    ADVERTISER ===>|"1️⃣ Share templates & protected views"| WALMART
     
     subgraph WALMART["🛒 WALMART ACCOUNT (Consumer)"]
-        direction LR
-        CD[("Walmart Data")]
-        MS["Mounted Share"]
-        RP["Request Procedure"]
-        QE["🚀 Query Execution<br/>MAIN COST 💰💰💰"]
+        W1["Mounted Share"] --- W2["Walmart Data"] --- W3["Request Procedure"] --- W4["🚀 Query Execution<br/>💰💰💰 MAIN COST"]
     end
     
-    PD -.->|protected by| RAP
-    RAP ==>|"Secure Share"| MS
-    PT ==>|"Templates"| MS
-    RP ==>|"Requests"| RS
-    RS -.-> RL
-    RL ==>|"Approval Status"| WALMART
+    WALMART ===>|"2️⃣ Submit requests"| ADVERTISER
+    ADVERTISER ===>|"3️⃣ Return approval status"| WALMART
     
-    MS --> QE
-    CD --> QE
-    
-    style QE fill:#ffc220,stroke:#333,stroke-width:3px,color:#000
-    style RAP fill:#00A1D9,stroke:#333,stroke-width:2px,color:#fff
-    style ADVERTISER fill:#e6f7ff,stroke:#00A1D9,stroke-width:3px
-    style WALMART fill:#0071ce,stroke:#041e42,stroke-width:3px,color:#fff
-    
-    linkStyle 0,3 stroke:#666,stroke-width:1px,stroke-dasharray:5
-    linkStyle 1,2,4,5 stroke:#333,stroke-width:3px
+    style ADVERTISER fill:#e6f7ff,stroke:#00A1D9,stroke-width:4px
+    style WALMART fill:#0071ce,stroke:#041e42,stroke-width:4px,color:#fff
+    style A2 fill:#00A1D9,color:#fff
+    style W4 fill:#ffc220,color:#000
 ```
 
 ---
