@@ -18,6 +18,7 @@ A concise guide explaining where queries run and who pays in a Snowflake Data Cl
 ## Architecture Overview
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#333333'}}}%%
 flowchart LR
     subgraph ADVERTISER["📺 ADVERTISER (Provider)"]
         AD[("Data:<br/>customers,<br/>exposures")]
@@ -49,10 +50,13 @@ flowchart LR
     WRQ -.->|"share"| ARS
     ADF -.->|"if approved"| WQE
     
-    style ADVERTISER fill:#e6f7ff,stroke:#00A1D9,stroke-width:2px
-    style WALMART fill:#0071ce,stroke:#041e42,stroke-width:2px,color:#fff
-    style WQE fill:#ffc220,stroke:#000,stroke-width:2px,color:#000
-    style ADF fill:#00A1D9,stroke:#000,stroke-width:2px,color:#fff
+    style ADVERTISER fill:#e6f7ff,stroke:#00A1D9,stroke-width:3px
+    style WALMART fill:#cce5ff,stroke:#0071ce,stroke-width:3px
+    style WQE fill:#ffc220,stroke:#333,stroke-width:3px,color:#000
+    style ADF fill:#00A1D9,stroke:#333,stroke-width:3px,color:#fff
+    
+    linkStyle default stroke:#333,stroke-width:2px
+    linkStyle 5,6,7,8 stroke:#0071ce,stroke-width:3px
 ```
 
 ---

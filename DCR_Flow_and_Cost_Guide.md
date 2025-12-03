@@ -18,6 +18,7 @@ A concise guide explaining where queries run and who pays in a Snowflake Data Cl
 ## Architecture Overview
 
 ```mermaid
+%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#333333'}}}%%
 flowchart LR
     subgraph PROVIDER["🏢 PROVIDER"]
         PD[("Data:<br/>customers,<br/>exposures")]
@@ -49,10 +50,13 @@ flowchart LR
     CRQ -.->|"share"| PRS
     PDF -.->|"if approved"| CQE
     
-    style PROVIDER fill:#e7f5ff,stroke:#1971c2,stroke-width:2px
-    style CONSUMER fill:#fff9db,stroke:#f59f00,stroke-width:2px
-    style CQE fill:#ff6b6b,stroke:#000,stroke-width:2px,color:#fff
-    style PDF fill:#4dabf7,stroke:#000,stroke-width:2px,color:#fff
+    style PROVIDER fill:#e7f5ff,stroke:#1971c2,stroke-width:3px
+    style CONSUMER fill:#fff9db,stroke:#f59f00,stroke-width:3px
+    style CQE fill:#ff6b6b,stroke:#333,stroke-width:3px,color:#fff
+    style PDF fill:#4dabf7,stroke:#333,stroke-width:3px,color:#fff
+    
+    linkStyle default stroke:#333,stroke-width:2px
+    linkStyle 5,6,7,8 stroke:#1971c2,stroke-width:3px
 ```
 
 ---
