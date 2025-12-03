@@ -19,7 +19,7 @@ A concise guide explaining where queries run and who pays in a Snowflake Data Cl
 ## Architecture Overview
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#333333', 'fontSize': '16px'}}}%%
+%%{init: {'theme': 'base', 'themeVariables': {'lineColor': '#333333', 'fontSize': '26px'}}}%%
 flowchart LR
     subgraph PROVIDER["🏢 PROVIDER"]
         PD[("Data:<br/>customers,<br/>exposures")]
@@ -170,7 +170,7 @@ The Provider's data is protected by a **Row Access Policy** that only allows acc
 
 ```mermaid
 %%{init: {'theme': 'base', 'themeVariables': {'fontSize': '26px'}}}%%
-flowchart TB
+flowchart LR
     Q[Consumer Query] ==> DF{Data Firewall}
     DF ==>|"✅ Hash matches"| D[(Provider Data)]
     DF ==>|"❌ Hash mismatch"| X[No rows returned]
