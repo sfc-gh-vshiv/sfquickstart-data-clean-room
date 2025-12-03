@@ -52,7 +52,7 @@ flowchart LR
     PDF -.->|"if approved"| CQE
     
     style PROVIDER fill:#e7f5ff,stroke:#1971c2,stroke-width:3px
-    style CONSUMER fill:#fff9db,stroke:#f59f00,stroke-width:3px
+    style CONSUMER fill:#fff0f0,stroke:#e03131,stroke-width:3px
     style CQE fill:#ff6b6b,stroke:#333,stroke-width:3px,color:#fff
     style PDF fill:#4dabf7,stroke:#333,stroke-width:3px,color:#fff
     
