@@ -19,42 +19,38 @@ A concise guide explaining where queries run and who pays in a Snowflake Data Cl
 
 ```mermaid
 flowchart TB
-    subgraph Provider["🏢 PROVIDER ACCOUNT"]
-        PD[(Provider Data<br/>customers, exposures)]
-        PT[Templates]
-        RL[Request Log]
-        DF[Data Firewall<br/>Row Access Policy]
-        TASK[Validation Tasks]
+    subgraph PROVIDER["🏢 PROVIDER ACCOUNT"]
+        direction TB
+        PD[("📊 Provider Data<br/>customers, exposures")]
+        PT["📝 Templates<br/>(allowed queries)"]
+        RS["🔄 Request Stream<br/>& Validation Tasks"]
+        RL["📋 Request Log<br/>(approval status)"]
+        RAP["🛡️ Row Access Policy<br/>(Data Firewall)"]
+        
+        PD --> RAP
+        RS --> RL
     end
     
-    subgraph Share["📤 SECURE SHARE"]
-        SV[Protected Views]
-        TMP[Templates View]
-        LOG[Provider Log View]
+    subgraph CONSUMER["🏪 CONSUMER ACCOUNT"]
+        direction TB
+        CD[("📊 Consumer Data<br/>customers, conversions")]
+        MS["📦 Mounted Share<br/>(dcr_samp_app)"]
+        RP["⚙️ Request Procedure<br/>(builds & submits)"]
+        QE["🚀 Query Execution<br/>💰💰💰 MAIN COST"]
+        
+        RP --> QE
+        CD --> QE
     end
     
-    subgraph Consumer["🏪 CONSUMER ACCOUNT"]
-        CD[(Consumer Data<br/>customers, conversions)]
-        REQ[Request Table]
-        APP[Mounted Clean Room App]
-        PROC[Request Procedure]
-    end
+    PROVIDER -->|"Secure Share<br/>(templates, protected views)"| MS
+    RP -->|"Request Share<br/>(requests table)"| RS
+    RL -->|"Shared back via<br/>provider_log view"| CONSUMER
+    MS --> QE
     
-    PD --> DF --> SV
-    PT --> TMP
-    RL --> LOG
-    
-    SV --> APP
-    TMP --> APP
-    LOG --> APP
-    
-    REQ -.->|Shared Back| Provider
-    
-    style Provider fill:#e3f2fd,stroke:#1565c0,stroke-width:3px
-    style Consumer fill:#fff3e0,stroke:#e65100,stroke-width:3px
-    style Share fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
-    
-    linkStyle default stroke:#333,stroke-width:2px
+    style QE fill:#ff6b6b,stroke:#c92a2a,color:#fff
+    style RAP fill:#4dabf7,stroke:#1971c2,color:#fff
+    style PROVIDER fill:#e7f5ff,stroke:#1971c2
+    style CONSUMER fill:#fff3bf,stroke:#f59f00
 ```
 
 ---
