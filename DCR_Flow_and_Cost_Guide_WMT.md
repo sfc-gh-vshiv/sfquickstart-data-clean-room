@@ -20,37 +20,39 @@ A concise guide explaining where queries run and who pays in a Snowflake Data Cl
 ```mermaid
 flowchart TB
     subgraph ADVERTISER["📺 ADVERTISER ACCOUNT (Provider)"]
-        direction TB
-        PD[("📊 Advertiser Data<br/>customers, exposures")]
-        PT["📝 Templates<br/>(allowed queries)"]
-        RS["🔄 Request Stream<br/>& Validation Tasks"]
-        RL["📋 Request Log<br/>(approval status)"]
-        RAP["🛡️ Row Access Policy<br/>(Data Firewall)"]
-        
-        PD --> RAP
-        RS --> RL
+        direction LR
+        PD[("Advertiser Data")]
+        PT["Templates"]
+        RS["Request Stream"]
+        RL["Request Log"]
+        RAP["🛡️ Data Firewall"]
     end
     
     subgraph WALMART["🛒 WALMART ACCOUNT (Consumer)"]
-        direction TB
-        CD[("📊 Walmart Data<br/>customers, conversions")]
-        MS["📦 Mounted Share<br/>(dcr_app)"]
-        RP["⚙️ Request Procedure<br/>(builds & submits)"]
-        QE["🚀 Query Execution<br/>💰💰💰 MAIN COST"]
-        
-        RP --> QE
-        CD --> QE
+        direction LR
+        CD[("Walmart Data")]
+        MS["Mounted Share"]
+        RP["Request Procedure"]
+        QE["🚀 Query Execution<br/>MAIN COST 💰💰💰"]
     end
     
-    ADVERTISER -->|"Secure Share<br/>(templates, protected views)"| MS
-    RP -->|"Request Share<br/>(requests table)"| RS
-    RL -->|"Shared back via<br/>provider_log view"| WALMART
-    MS --> QE
+    PD -.->|protected by| RAP
+    RAP ==>|"Secure Share"| MS
+    PT ==>|"Templates"| MS
+    RP ==>|"Requests"| RS
+    RS -.-> RL
+    RL ==>|"Approval Status"| WALMART
     
-    style QE fill:#ffc220,stroke:#0071ce,stroke-width:3px,color:#041e42
-    style RAP fill:#00A1D9,stroke:#007ab8,stroke-width:3px,color:#fff
-    style ADVERTISER fill:#e6f4fa,stroke:#00A1D9,stroke-width:3px
+    MS --> QE
+    CD --> QE
+    
+    style QE fill:#ffc220,stroke:#333,stroke-width:3px,color:#000
+    style RAP fill:#00A1D9,stroke:#333,stroke-width:2px,color:#fff
+    style ADVERTISER fill:#e6f7ff,stroke:#00A1D9,stroke-width:3px
     style WALMART fill:#0071ce,stroke:#041e42,stroke-width:3px,color:#fff
+    
+    linkStyle 0,3 stroke:#666,stroke-width:1px,stroke-dasharray:5
+    linkStyle 1,2,4,5 stroke:#333,stroke-width:3px
 ```
 
 ---
@@ -158,17 +160,17 @@ The Advertiser's data is protected by a **Row Access Policy** that only allows a
 3. The request has been approved
 
 ```mermaid
-flowchart LR
-    Q[Walmart Query] --> DF{Data Firewall}
-    DF -->|Hash matches approved request| D[(Advertiser Data)]
-    DF -->|Hash doesn't match| X[❌ No rows returned]
+flowchart TB
+    Q[Walmart Query] ==> DF{Data Firewall}
+    DF ==>|"✅ Hash matches"| D[(Advertiser Data)]
+    DF ==>|"❌ Hash mismatch"| X[No rows returned]
     
-    style Q fill:#0071ce,stroke:#041e42,stroke-width:3px,color:#fff
-    style DF fill:#ffc220,stroke:#041e42,stroke-width:3px,color:#041e42
-    style D fill:#00A1D9,stroke:#007ab8,stroke-width:3px,color:#fff
-    style X fill:#c62828,stroke:#8b0000,stroke-width:3px,color:#fff
+    style Q fill:#0071ce,stroke:#333,stroke-width:2px,color:#fff
+    style DF fill:#ffc220,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#00A1D9,stroke:#333,stroke-width:2px,color:#fff
+    style X fill:#c62828,stroke:#333,stroke-width:2px,color:#fff
     
-    linkStyle default stroke:#041e42,stroke-width:2px
+    linkStyle default stroke:#333,stroke-width:3px
 ```
 
 ---

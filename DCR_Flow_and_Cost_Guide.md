@@ -20,37 +20,39 @@ A concise guide explaining where queries run and who pays in a Snowflake Data Cl
 ```mermaid
 flowchart TB
     subgraph PROVIDER["🏢 PROVIDER ACCOUNT"]
-        direction TB
-        PD[("📊 Provider Data<br/>customers, exposures")]
-        PT["📝 Templates<br/>(allowed queries)"]
-        RS["🔄 Request Stream<br/>& Validation Tasks"]
-        RL["📋 Request Log<br/>(approval status)"]
-        RAP["🛡️ Row Access Policy<br/>(Data Firewall)"]
-        
-        PD --> RAP
-        RS --> RL
+        direction LR
+        PD[("Provider Data")]
+        PT["Templates"]
+        RS["Request Stream"]
+        RL["Request Log"]
+        RAP["🛡️ Data Firewall"]
     end
     
     subgraph CONSUMER["🏪 CONSUMER ACCOUNT"]
-        direction TB
-        CD[("📊 Consumer Data<br/>customers, conversions")]
-        MS["📦 Mounted Share<br/>(dcr_samp_app)"]
-        RP["⚙️ Request Procedure<br/>(builds & submits)"]
-        QE["🚀 Query Execution<br/>💰💰💰 MAIN COST"]
-        
-        RP --> QE
-        CD --> QE
+        direction LR
+        CD[("Consumer Data")]
+        MS["Mounted Share"]
+        RP["Request Procedure"]
+        QE["🚀 Query Execution<br/>MAIN COST 💰💰💰"]
     end
     
-    PROVIDER -->|"Secure Share<br/>(templates, protected views)"| MS
-    RP -->|"Request Share<br/>(requests table)"| RS
-    RL -->|"Shared back via<br/>provider_log view"| CONSUMER
-    MS --> QE
+    PD -.->|protected by| RAP
+    RAP ==>|"Secure Share"| MS
+    PT ==>|"Templates"| MS
+    RP ==>|"Requests"| RS
+    RS -.-> RL
+    RL ==>|"Approval Status"| CONSUMER
     
-    style QE fill:#ff6b6b,stroke:#c92a2a,color:#fff
-    style RAP fill:#4dabf7,stroke:#1971c2,color:#fff
-    style PROVIDER fill:#e7f5ff,stroke:#1971c2
-    style CONSUMER fill:#fff3bf,stroke:#f59f00
+    MS --> QE
+    CD --> QE
+    
+    style QE fill:#ff6b6b,stroke:#333,stroke-width:3px,color:#fff
+    style RAP fill:#4dabf7,stroke:#333,stroke-width:2px,color:#fff
+    style PROVIDER fill:#e7f5ff,stroke:#1971c2,stroke-width:3px
+    style CONSUMER fill:#fff3bf,stroke:#f59f00,stroke-width:3px
+    
+    linkStyle 0,3 stroke:#666,stroke-width:1px,stroke-dasharray:5
+    linkStyle 1,2,4,5 stroke:#333,stroke-width:3px
 ```
 
 ---
@@ -158,17 +160,17 @@ The Provider's data is protected by a **Row Access Policy** that only allows acc
 3. The request has been approved
 
 ```mermaid
-flowchart LR
-    Q[Consumer Query] --> DF{Data Firewall}
-    DF -->|Hash matches approved request| D[(Provider Data)]
-    DF -->|Hash doesn't match| X[❌ No rows returned]
+flowchart TB
+    Q[Consumer Query] ==> DF{Data Firewall}
+    DF ==>|"✅ Hash matches"| D[(Provider Data)]
+    DF ==>|"❌ Hash mismatch"| X[No rows returned]
     
-    style Q fill:#fff3e0,stroke:#e65100,stroke-width:3px
-    style DF fill:#ffcdd2,stroke:#c62828,stroke-width:3px
-    style D fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
-    style X fill:#ffcdd2,stroke:#c62828,stroke-width:3px
+    style Q fill:#fff3bf,stroke:#333,stroke-width:2px,color:#000
+    style DF fill:#ffcdd2,stroke:#333,stroke-width:2px,color:#000
+    style D fill:#c8e6c9,stroke:#333,stroke-width:2px,color:#000
+    style X fill:#c62828,stroke:#333,stroke-width:2px,color:#fff
     
-    linkStyle default stroke:#333,stroke-width:2px
+    linkStyle default stroke:#333,stroke-width:3px
 ```
 
 ---
