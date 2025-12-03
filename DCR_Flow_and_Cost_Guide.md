@@ -18,7 +18,6 @@ A concise guide explaining where queries run and who pays in a Snowflake Data Cl
 ## Architecture Overview
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'lineColor': '#333', 'primaryTextColor': '#333', 'primaryBorderColor': '#333'}}}%%
 flowchart TB
     subgraph Provider["🏢 PROVIDER ACCOUNT"]
         PD[(Provider Data<br/>customers, exposures)]
@@ -51,9 +50,9 @@ flowchart TB
     
     REQ -.->|Shared Back| Provider
     
-    style Provider fill:#c5d86d,stroke:#94a14a,stroke-width:3px
-    style Consumer fill:#f4a261,stroke:#d12b1f,stroke-width:3px
-    style Share fill:#fcba03,stroke:#e9a000,stroke-width:3px
+    style Provider fill:#e3f2fd,stroke:#1565c0,stroke-width:3px
+    style Consumer fill:#fff3e0,stroke:#e65100,stroke-width:3px
+    style Share fill:#f3e5f5,stroke:#7b1fa2,stroke-width:3px
     
     linkStyle default stroke:#333,stroke-width:2px
 ```
@@ -63,7 +62,6 @@ flowchart TB
 ## Request Lifecycle
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'actorBkg': '#f4a261', 'actorBorder': '#d12b1f', 'actorTextColor': '#333', 'actorLineColor': '#333', 'signalColor': '#333', 'signalTextColor': '#333', 'noteBkgColor': '#fcba03', 'noteBorderColor': '#e9a000', 'noteTextColor': '#333', 'sequenceNumberColor': '#fff'}}}%%
 sequenceDiagram
     autonumber
     participant C as 👤 Consumer
@@ -164,16 +162,15 @@ The Provider's data is protected by a **Row Access Policy** that only allows acc
 3. The request has been approved
 
 ```mermaid
-%%{init: {'theme': 'base', 'themeVariables': { 'lineColor': '#333', 'primaryTextColor': '#333'}}}%%
 flowchart LR
     Q[Consumer Query] --> DF{Data Firewall}
     DF -->|Hash matches approved request| D[(Provider Data)]
     DF -->|Hash doesn't match| X[❌ No rows returned]
     
-    style Q fill:#f4a261,stroke:#d12b1f,stroke-width:3px
-    style DF fill:#fcba03,stroke:#e9a000,stroke-width:3px
-    style D fill:#c5d86d,stroke:#94a14a,stroke-width:3px
-    style X fill:#d12b1f,stroke:#8b0000,stroke-width:3px,color:#fff
+    style Q fill:#fff3e0,stroke:#e65100,stroke-width:3px
+    style DF fill:#ffcdd2,stroke:#c62828,stroke-width:3px
+    style D fill:#c8e6c9,stroke:#2e7d32,stroke-width:3px
+    style X fill:#ffcdd2,stroke:#c62828,stroke-width:3px
     
     linkStyle default stroke:#333,stroke-width:2px
 ```
