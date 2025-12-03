@@ -1,3 +1,18 @@
+<style>
+@media print {
+  body { font-size: 11pt; line-height: 1.4; }
+  h1 { font-size: 18pt; page-break-after: avoid; }
+  h2 { font-size: 14pt; page-break-after: avoid; margin-top: 12pt; }
+  h3 { font-size: 12pt; page-break-after: avoid; }
+  table { font-size: 10pt; page-break-inside: avoid; width: 100%; }
+  pre, code { font-size: 9pt; }
+  blockquote { page-break-inside: avoid; }
+  .page-break { page-break-before: always; }
+  svg { max-width: 100% !important; height: auto !important; }
+}
+@page { margin: 0.75in; }
+</style>
+
 # Walmart Data Clean Room: Execution Flow & Cost Guide
 
 A concise guide explaining where queries run and who pays in a Snowflake Data Clean Room between **Walmart** and **Advertisers**.
@@ -98,6 +113,8 @@ sequenceDiagram
 
 ---
 
+<div class="page-break"></div>
+
 ## Cost Breakdown by Phase
 
 ### Phase 1: Setup (One-time)
@@ -154,6 +171,8 @@ pie showData
 ```
 
 ---
+
+<div class="page-break"></div>
 
 ## The Data Firewall: How It Works
 
